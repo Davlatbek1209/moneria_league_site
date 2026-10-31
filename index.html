@@ -78,7 +78,11 @@ async function renderStandings(){
  const {data,error}=await supabaseClient
    .from('standings')
    .select('*');
-
+alert(JSON.stringify({
+  error: error,
+  count: data ? data.length : 0,
+  firstRow: data ? data[0] : null
+}));
  if(error){
    document.getElementById('standingsBody').innerHTML =
    '<tr><td colspan="8">Ошибка: '+error.message+'</td></tr>';
