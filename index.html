@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
+<script>
+  const SUPABASE_URL = 'https://mtamzjetlufbcsxywfkl.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_8hU3jJ4rkz2YKzfxtpO50w_AffSiYIx';
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
+ <head>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0c10">
@@ -78,6 +88,21 @@ document.getElementById('sortTable').addEventListener('change',renderStandings);
 document.querySelectorAll('[data-target]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-target]').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth'})}));
 document.querySelectorAll('[data-scroll]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth'})));
 renderStandings();renderTeams();
+</script>
+<script>
+async function loadTeams() {
+  const { data, error } = await supabaseClient
+    .from('teams')
+    .select('*')
+    .order('name');
+
+  if (error) {
+    console.error('MONERIA:', error.message);
+    return;
+  }
+
+  console.log('MONERIA Teams:', data);
+}
 </script>
 </body>
 </html>
