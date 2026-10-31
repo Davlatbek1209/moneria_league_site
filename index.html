@@ -71,14 +71,39 @@ const demo = [
 [0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]
 ];
 function initials(n){return n.replace(/[^A-Za-zА-Яа-я0-9 ]/g,'').split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase()||'ML'}
-function renderStandings(){
+async function renderStandings(){
  const q=document.getElementById('teamSearch').value.toLowerCase().trim();
  const mode=document.getElementById('sortTable').value;
- let rows=teams.map((name,i)=>({name,i,m:demo[i][0],w:demo[i][1],d:demo[i][2],l:demo[i][3],diff:demo[i][4],pts:demo[i][5]})).filter(t=>t.name.toLowerCase().includes(q));
- if(mode==='name') rows.sort((a,b)=>a.name.localeCompare(b.name));
- if(mode==='points') rows.sort((a,b)=>b.pts-a.pts||a.name.localeCompare(b.name));
- if(mode==='rank') rows.sort((a,b)=>a.i-b.i);
- document.getElementById('standingsBody').innerHTML=rows.map((t)=>`<tr><td>${t.i+1}</td><td><div class="team"><span class="crest">${initials(t.name)}</span>${t.name}</div></td><td>${t.m}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.diff>0?'+':''}${t.diff}</td><td class="points">${t.pts}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">Команда не найдена</td></tr>';
+
+ const {data,error}=await supabaseClient
+   .from('standings')
+   .select('*');
+
+ if(error){
+   console.error('Standings error:',error.message);
+   return;
+ }
+
+ let rows=data.filter(t=>
+   t.team_name.toLowerCase().includes(q)
+ );
+
+ if(mode==='name') rows.sort((a,b)=>a.team_name.localeCompare(b.team_name));
+ if(mode==='points') rows.sort((a,b)=>b.points-a.points);
+ if(mode==='rank') rows.sort((a,b)=>b.points-a.points);
+
+ document.getElementById('standingsBody').innerHTML=rows.map((t,i)=>`
+ <tr>
+ <td>${i+1}</td>
+ <td><div class="team"><span class="crest">${initials(t.team_name)}</span>${t.team_name}</div></td>
+ <td>${t.played}</td>
+ <td>${t.wins}</td>
+ <td>${t.draws}</td>
+ <td>${t.losses}</td>
+ <td>${t.map_difference>0?'+':''}${t.map_difference}</td>
+ <td class="points">${t.points}</td>
+ </tr>
+ `).join('')||'<tr><td colspan="8" class="empty">Команда не найдена</td></tr>';
 }
 function renderTeams(){document.getElementById('teamGrid').innerHTML=teams.map((n,i)=>`<div class="team-card"><div class="crest">${initials(n)}</div><b>${n}</b><small>Предварительный список · #${String(i+1).padStart(2,'0')}</small></div>`).join('')}
 const sampleMatches=[["Team 01","Team 02"],["Team 03","Team 04"],["Team 05","Team 06"],["Team 07","Team 08"]];
