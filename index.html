@@ -80,7 +80,8 @@ async function renderStandings(){
    .select('*');
 
  if(error){
-   console.error('Standings error:',error.message);
+   document.getElementById('standingsBody').innerHTML =
+   '<tr><td colspan="8">Ошибка: '+error.message+'</td></tr>';
    return;
  }
 
