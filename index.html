@@ -84,7 +84,8 @@ async function renderStandings(){
    '<tr><td colspan="8">Ошибка: '+error.message+'</td></tr>';
    return;
  }
-
+console.log('STANDINGS DATA:', data);
+console.log('STANDINGS ERROR:', error);
  let rows=data.filter(t=>
    t.team_name.toLowerCase().includes(q)
  );
